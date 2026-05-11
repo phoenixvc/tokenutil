@@ -32,6 +32,14 @@ _CL100K_KEYWORDS = frozenset(
         "gpt-3.5",
         "text-embedding-3",
         "text-embedding-ada",
+        # Sluice policy aliases.
+        "auto",
+        "cheap-fast",
+        "cheap-reasoning",
+        "cheap-long-context",
+        "cheap-coding",
+        "premium",
+        "openrouter-free",
         # Inference aggregators hosting OpenAI-compatible open-weight models
         "groq",
         "together",
@@ -97,7 +105,7 @@ def count_tokens_for_text(text: str, model: str) -> int:
     # Optional SentencePiece path for Gemini
     if "gemini" in model.lower():
         try:
-            from tokenutil._sentencepiece import count_sp  # type: ignore[import-not-found]
+            from tokenutil._sentencepiece import count_sp
 
             return count_sp(text)
         except ImportError:

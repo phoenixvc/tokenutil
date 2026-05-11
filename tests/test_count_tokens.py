@@ -87,13 +87,9 @@ def test_responses_api_input_text_type() -> None:
 
 
 def test_sluice_alias_cheap_fast_uses_cl100k() -> None:
-    # "cheap-fast" contains no known keyword; falls to heuristic BUT
-    # we just want a non-zero count without crash
     text = "The quick brown fox jumps over the lazy dog."
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", UserWarning)
-        n = count_tokens(text, model="cheap-fast")
-    assert n > 0
+    n = count_tokens(text, model="cheap-fast")
+    assert n == count_tokens(text, model="gpt-4")
 
 
 def test_sluice_alias_groq_model() -> None:
