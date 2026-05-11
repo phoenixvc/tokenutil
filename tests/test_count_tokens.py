@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import warnings
+from types import SimpleNamespace
 
 import pytest
 
@@ -103,6 +104,24 @@ def test_kimi_coding_alias() -> None:
     text = "The quick brown fox jumps over the lazy dog."
     n = count_tokens(text, model="kimi-coding")
     assert n == count_tokens(text, model="gpt-4")  # kimi → cl100k_base
+
+
+def test_gemini_sentencepiece_load_error_falls_back(monkeypatch: pytest.MonkeyPatch) -> None:
+    class BrokenSentencePieceProcessor:
+        def __init__(self, model_file: str) -> None:
+            raise OSError(f"missing model: {model_file}")
+
+    monkeypatch.setenv("TOKENUTIL_SENTENCEPIECE_MODEL", "missing.model")
+    monkeypatch.setitem(
+        __import__("sys").modules,
+        "sentencepiece",
+        SimpleNamespace(SentencePieceProcessor=BrokenSentencePieceProcessor),
+    )
+
+    with pytest.warns(UserWarning, match="using 4 chars/token heuristic"):
+        n = count_tokens("a" * 400, model="gemini-flash")
+
+    assert n == 100
 
 
 # ---------------------------------------------------------------------------

@@ -34,5 +34,9 @@ def count_sp(text: str) -> int:
         )
         raise ImportError("TOKENUTIL_SENTENCEPIECE_MODEL is not set")
 
-    processor = spm.SentencePieceProcessor(model_file=model_path)
+    try:
+        processor = spm.SentencePieceProcessor(model_file=model_path)
+    except Exception as exc:
+        raise ImportError("failed to load TOKENUTIL_SENTENCEPIECE_MODEL") from exc
+
     return len(processor.encode(text, out_type=int))
